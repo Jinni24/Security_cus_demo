@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공공 서비스 홈</title>
+    <!-- 폰트적용 cdn에서 가져옴. 본 버전은 토스 UI/UX를 본따 만들예정이기 때문에 색상관련 식별자는 앞단에 toss 사용함 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --toss-blue: #3182f6;
+            --toss-grey: #f2f4f6;
+            --toss-text: #191f28;
+            --toss-sub-text: #4e5968;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--toss-grey);
+            color: var(--toss-text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 40px 24px;
+            border-radius: 32px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 35px;
+            font-weight: 800;
+            color: var(--toss-blue);
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--toss-sub-text);
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background-color: #fff;
+            border: 2px solid #eee;
+            padding: 24px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+       /* 보안 모듈 활성화 시 스타일 변경란임 */
+        .status-card.active {
+            border-color: var(--toss-blue);
+            background-color: #f0f7ff;
+        }
+
+        .ip-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8b95a1;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .ip-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-safe { background: #e8f3ff; color: var(--toss-blue); }
+        .badge-admin { background: #fee; color: #f04452; }
+
+        .btn {
+            margin-top: 32px;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background-color: var(--toss-blue);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active { opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">국립현대미술관 도서관</div>
+    <h1 id="main-title">서비스에 접속 중입니다</h1>
+    <p id="sub-title">모든 사용자를 위한 안전한 공공 서비스</p>
+
+    <div class="status-card" id="card">
+        <span class="ip-label">접속 IP 주소</span>
+        <span class="ip-value" id="user-ip">불러오는 중...</span>
+        <div id="badge-area"></div>
+    </div>
+
+    <button class="btn" onclick="location.reload()">입장</button>
+</div>
+
+<script>
+    // 💡 IP대역 설정란. 본인IP 해당할 수 있도록 설정값 바꿔주세요.
+    const ADMIN_IP_RANGE = ["1.2.3.4", "211.177.54.110"]; 
+
+    async function checkSecurityPolicy() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            const userIP = data.ip;
+            
+            document.getElementById('user-ip').innerText = userIP;
+            const card = document.getElementById('card');
+            const badgeArea = document.getElementById('badge-area');
+            const title = document.getElementById('main-title');
+
+            // IP 대역 체크 (관리자인 경우)
+            if (ADMIN_IP_RANGE.includes(userIP)) {
+                card.classList.add('active');
+                title.innerText = "보안 솔루션을\n실행합니다";
+                badgeArea.innerHTML = '<span class="badge badge-admin">🔒 국립현대미술관 "임직원" 컴퓨터로 접속하셨습니다.</span>';
+                
+                // 실제 솔루션 실행 함수 호출 가능 (PoC용 알림, 실제 적용시 모듈호출 함수 넣어야 함)
+                setTimeout(() => alert("화면캡처방지 설치가 필요합니다. \n설치페이지로 이동합니다."), 300);
+            } 
+            // 일반 사용자인 경우
+            else {
+                title.innerText = "반갑습니다\n서비스를 이용해보세요";
+                badgeArea.innerHTML = '<span class="badge badge-safe">✅ 일반 모드로 접속되었습니다</span>';
+            }
+        } catch (err) {
+            document.getElementById('user-ip').innerText = "연결 오류";
+        }
+    }
+
+    checkSecurityPolicy();
+</script>
+
+</body>
+</html>
