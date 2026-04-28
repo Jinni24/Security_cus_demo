@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>국립현대미술관 도서관 - 데모</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --toss-blue: #3182f6;
+            --toss-grey: #f2f4f6;
+            --toss-text: #191f28;
+            --toss-sub-text: #4e5968;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--toss-grey);
+            color: var(--toss-text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 40px 24px;
+            border-radius: 32px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--toss-blue);
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            white-space: pre-line; /* 줄바꿈 적용 */
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--toss-sub-text);
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background-color: #fff;
+            border: 2px solid #eee;
+            padding: 24px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .status-card.active {
+            border-color: var(--toss-blue);
+            background-color: #f0f7ff;
+        }
+
+        .ip-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8b95a1;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .ip-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-safe { background: #e8f3ff; color: var(--toss-blue); }
+        .badge-admin { background: #fee; color: #f04452; }
+
+        .btn {
+            margin-top: 32px;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background-color: var(--toss-blue);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 데모용 제어 버튼 스타일 */
+        .demo-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .demo-btn {
+            padding: 10px 16px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+
+        .demo-btn:hover { background: #f2f4f6; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">국립현대미술관 도서관</div>
+    <h1 id="main-title">서비스에 접속 중입니다</h1>
+    <p id="sub-title">모든 사용자를 위한 안전한 공공 서비스</p>
+
+    <div class="status-card" id="card">
+        <span class="ip-label">접속 IP 주소</span>
+        <span class="ip-value" id="user-ip">불러오는 중...</span>
+        <div id="badge-area"></div>
+    </div>
+
+    <button class="btn" onclick="location.reload()">입장하기</button>
+</div>
+
+<div class="demo-controls">
+    <button class="demo-btn" onclick="applyMode('user')">👥 일반 사용자</button>
+    <button class="demo-btn" onclick="applyMode('admin')">🏢 임직원 PoC</button>
+</div>
+
+<script>
+    const card = document.getElementById('card');
+    const badgeArea = document.getElementById('badge-area');
+    const title = document.getElementById('main-title');
+    const userIpDisplay = document.getElementById('user-ip');
+
+    // 모드 전환 로직
+    function applyMode(mode) {
+        if (mode === 'admin') {
+            card.classList.add('active');
+            title.innerText = "보안 솔루션을\n실행합니다";
+            userIpDisplay.innerText = "211.177.54.110 (확인됨)";
+            badgeArea.innerHTML = '<span class="badge badge-admin">🔒 임직원 IP 대역 감지 🔒</span>';
+            
+            // 현장 시연용 팝업 효과
+            setTimeout(() => {
+                confirm("[보안 알림]\n임직원망 접속이 확인되었습니다.\n화면캡처방지 모듈을 로드합니다.");
+            }, 300);
+        } else {
+            card.classList.remove('active');
+            title.innerText = "반갑습니다\n서비스를 이용해보세요";
+            // 실제 IP를 보여주거나 가상의 일반 IP 표시
+            if(userIpDisplay.innerText.includes("확인됨")) {
+                userIpDisplay.innerText = "121.165.XX.XX (일반)";
+            }
+            badgeArea.innerHTML = '<span class="badge badge-safe">✅ 자유롭게 서비스를 이용해보세요! </span>';
+        }
+    }
+
+    // 초기 실행 (실제 IP 가져오기)
+    async function checkRealIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            userIpDisplay.innerText = data.ip;
+            applyMode('user'); // 처음엔 일반 모드로 세팅
+        } catch (err) {
+            userIpDisplay.innerText = "네트워크 연결 확인 필요";
+        }
+    }
+
+    checkRealIP();
+</script>
+
+</body>
+</html>
